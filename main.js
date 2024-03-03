@@ -14,6 +14,7 @@ class Bullet{
     checkCollision(invaders) {
         invaders.forEach(invader => {
           if (this.sprite.overlap(invader.sprite)) {
+            invader.explosion();
             invader.sprite.remove();
             this.sprite.remove();
             bullets.splice(bullets.indexOf(this), 1);
@@ -22,7 +23,6 @@ class Bullet{
         });
       }
 }
-
 
 class Invader{
     constructor(x, y, type){
@@ -36,6 +36,14 @@ class Invader{
     shoot(){
         let bullet = new Bullet(this.sprite.x, this.sprite.y, 'n');
         bullets.push(bullet);
+    }
+
+    explosion(){
+        let explosion = new Sprite(this.sprite.x, this.sprite.y, 50, 50, 'd');
+        explosion.img = './assets/invaderexplosion.gif';
+        explosion.scale = .25;
+        explosion.diameter = 50;
+        explosion.life = 30;
     }
 }
 
