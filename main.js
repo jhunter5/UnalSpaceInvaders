@@ -6,29 +6,29 @@ window.addEventListener('keydown', function(event) {
 
 const WINDOW_WIDTH = 1200;
 const WINDOW_HEIGHT = 800;
-const BULLET_WIDTH = 9;
-const BULLET_HEIGHT = 14;
-const BULLET_SPEED = -4;
+// const BULLET_WIDTH = 9;
+// const BULLET_HEIGHT = 14;
+// const BULLET_SPEED = -4;
 const AMOUNT_OF_INVADERS = 20;
 
 class Bullet{
-    constructor(x, y, type){
-        this.sprite = new Sprite(x, y, BULLET_WIDTH, BULLET_HEIGHT, type);
-        this.sprite.img = './assets/bullet.png';
-        this.sprite.vel.y = BULLET_SPEED;
+    constructor(x, y, bulled_width,bullet_height, vel){
+        this.sprite = new Sprite(x, y, bulled_width, bullet_height, type);
+        // this.sprite.img = './assets/bullet.png';
+        this.sprite.vel.y = vel;
     }
 
-    checkCollision(invaders) {
-        invaders.forEach(invader => {
-          if (this.sprite.overlap(invader.sprite)) {
-            invader.explosion();
-            invader.sprite.remove();
-            this.sprite.remove();
-            bullets.splice(bullets.indexOf(this), 1);
-          }
+    // checkCollision(invaders) {
+    //     invaders.forEach(invader => {
+    //       if (this.sprite.overlap(invader.sprite)) {
+    //         invader.explosion();
+    //         invader.sprite.remove();
+    //         this.sprite.remove();
+    //         bullets.splice(bullets.indexOf(this), 1);
+    //       }
         
-        });
-      }
+    //     });
+    //   }
 }
 
 class Invader{
