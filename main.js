@@ -6,15 +6,11 @@ window.addEventListener('keydown', function(event) {
 
 const WINDOW_WIDTH = 1200;
 const WINDOW_HEIGHT = 800;
-// const BULLET_WIDTH = 9;
-// const BULLET_HEIGHT = 14;
-// const BULLET_SPEED = -4;
 const AMOUNT_OF_INVADERS = 20;
 
 class Bullet{
-    constructor(x, y, bulled_width,bullet_height, vel){
-        this.sprite = new Sprite(x, y, bulled_width, bullet_height, type);
-        // this.sprite.img = './assets/bullet.png';
+    constructor(x, y, bulled_width, bullet_height, vel){
+        this.body = new Sprite(x, y, bulled_width, bullet_height, type);
         this.sprite.vel.y = vel;
     }
 
@@ -30,6 +26,14 @@ class Bullet{
     //     });
     //   }
 }
+
+class InvadersBullet extends Bullet{
+    constructor(x, y, vel){
+        super(x, y, 10, 10, vel);
+    }
+
+}
+
 
 class Invader{
     constructor(x, y, type){
