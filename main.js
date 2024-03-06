@@ -34,14 +34,14 @@ class InvadersBullet extends Bullet{
     }
 }
 
-class InvaderBulletType1 extends InvadersBullet{
+class BasicInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 3, 10);
         this.body.img = './assets/invaderbullet.png';
     }
 }
 
-class InvaderBulletType2 extends InvadersBullet{
+class AdvanceInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 4, 20)
         this.body.img = './assets/invaderbullet.png'; // Here will goes a differente texture, by now im gonna use the same
@@ -162,8 +162,8 @@ function setup() {
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
     // invaders = new Invaders();
     // invaders.spawnInvaders();
-    let bullet = new InvaderBulletType1(100, 100);
-    let bullet2 = new InvaderBulletType2(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    let bullet = new BasicInvaderBullet(100, 100);
+    let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
     invadersBullets.push(bullet);
     invadersBullets.push(bullet2);
 
