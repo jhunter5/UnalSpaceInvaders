@@ -8,24 +8,27 @@ const WINDOW_WIDTH = 1200;
 const WINDOW_HEIGHT = 800;
 const AMOUNT_OF_INVADERS = 20;
 
+
+
 class Bullet{
-    constructor(x, y, bulled_width, bullet_height, vel){
+    constructor(x, y, bulled_width, bullet_height, vel, damage){
         this.body = new Sprite(x, y, bulled_width, bullet_height, 'd');
         this.body.vel.y = vel;
         this.body.debug = true;
+        this.damage = damage;
     }
 }
 
 class InvadersBullet extends Bullet{
-    constructor(x, y, vel){
-        super(x, y, 10, 10, vel);
+    constructor(x, y, vel, damage){
+        super(x, y, 10, 10, vel, damage);
     }
 
     checkCollisionWithPlayer(){
         if (this.body.overlaps(player.sprite)) {
             this.body.remove();
             invadersBullets.splice(invadersBullets.indexOf(this), 1);
-            return true
+            console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
         }
         
     }
@@ -33,31 +36,16 @@ class InvadersBullet extends Bullet{
 
 class InvaderBulletType1 extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 3);
+        super(x, y, 3, 10);
         this.body.img = './assets/invaderbullet.png';
-        this.damage = 10
-    }
-
-    checkCollisionWithPlayer(){
-       if (super.checkCollisionWithPlayer()){
-        console.log(`hit with ${this.damage} damage`);
-       }
     }
 }
 
 class InvaderBulletType2 extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 4)
+        super(x, y, 4, 20)
         this.body.img = './assets/invaderbullet.png'; // Here will goes a differente texture, by now im gonna use the same
-        this.damage = 20
     }
-
-    checkCollisionWithPlayer(){
-        if (super.checkCollisionWithPlayer()){
-            console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
-        }
-    }
-
 }
 
 
