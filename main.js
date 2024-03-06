@@ -10,26 +10,52 @@ const AMOUNT_OF_INVADERS = 20;
 
 class Bullet{
     constructor(x, y, bulled_width, bullet_height, vel){
-        this.body = new Sprite(x, y, bulled_width, bullet_height, type);
-        this.sprite.vel.y = vel;
+        this.body = new Sprite(x, y, bulled_width, bullet_height, 'd');
+        this.body.vel.y = vel;
+        this.body.debug = true;
     }
-
-    // checkCollision(invaders) {
-    //     invaders.forEach(invader => {
-    //       if (this.sprite.overlap(invader.sprite)) {
-    //         invader.explosion();
-    //         invader.sprite.remove();
-    //         this.sprite.remove();
-    //         bullets.splice(bullets.indexOf(this), 1);
-    //       }
-        
-    //     });
-    //   }
 }
 
 class InvadersBullet extends Bullet{
     constructor(x, y, vel){
         super(x, y, 10, 10, vel);
+    }
+
+    checkCollisionWithPlayer(){
+        if (this.body.overlaps(player.sprite)) {
+            this.body.remove();
+            invadersBullets.splice(invadersBullets.indexOf(this), 1);
+            return true
+        }
+        
+    }
+}
+
+class InvaderBulletType1 extends InvadersBullet{
+    constructor(x, y){
+        super(x, y, 3);
+        this.body.img = './assets/invaderbullet.png';
+        this.damage = 10
+    }
+
+    checkCollisionWithPlayer(){
+       if (super.checkCollisionWithPlayer()){
+        console.log(`hit with ${this.damage} damage`);
+       }
+    }
+}
+
+class InvaderBulletType2 extends InvadersBullet{
+    constructor(x, y){
+        super(x, y, 4)
+        this.body.img = './assets/invaderbullet.png'; // Here will goes a differente texture, by now im gonna use the same
+        this.damage = 20
+    }
+
+    checkCollisionWithPlayer(){
+        if (super.checkCollisionWithPlayer()){
+            console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
+        }
     }
 
 }
@@ -140,15 +166,19 @@ class Player{
 let player;
 let invader;
 
-let bullets = [];
+let invadersBullets = [];
 let invaders
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-    
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    invaders = new Invaders();
-    invaders.spawnInvaders();
+    // invaders = new Invaders();
+    // invaders.spawnInvaders();
+    let bullet = new InvaderBulletType1(100, 100);
+    let bullet2 = new InvaderBulletType2(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    invadersBullets.push(bullet);
+    invadersBullets.push(bullet2);
+
     
 }
   
@@ -171,10 +201,10 @@ function draw() {
         player.shoot();
     }
 
-    bullets.forEach(bullet => {
-        bullet.checkCollision(invaders.group);
-    });
+    invadersBullets.forEach(bullet => {
+        bullet.checkCollisionWithPlayer(invadersBullets);
+    })
 
-    invaders.moveInvaders();
+    // invaders.moveInvaders();
 
 }
