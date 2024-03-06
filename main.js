@@ -8,7 +8,13 @@ const WINDOW_WIDTH = 1200;
 const WINDOW_HEIGHT = 800;
 const AMOUNT_OF_INVADERS = 20;
 
+const isVerticalOutside = (sprite) => {
+    return sprite.y < 0 || sprite.y > WINDOW_HEIGHT - sprite.height;
+}
 
+const isHorizontalOutside = (sprite) => {
+    return sprite.x < 0 || sprite.x > WINDOW_WIDTH - sprite.width;
+}
 
 class Bullet{
     constructor(x, y, bulled_width, bullet_height, vel, damage){
@@ -22,6 +28,13 @@ class Bullet{
 class InvadersBullet extends Bullet{
     constructor(x, y, vel, damage){
         super(x, y, 10, 10, vel, damage);
+    }
+
+    checkOutside(){
+        if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
+            this.body.remove();
+            invadersBullets.splice(invadersBullets.indexOf(this), 1);
+        }
     }
 
     checkCollisionWithPlayer(){
