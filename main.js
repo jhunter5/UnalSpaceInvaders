@@ -17,26 +17,31 @@ const isHorizontalOutside = (sprite) => {
 }
 
 class Bullet{
-    constructor(x, y, bulled_width, bullet_height, vel, damage){
-        this.body = new Sprite(x, y, bulled_width, bullet_height, 'd');
-        this.body.vel.y = vel;
+    constructor(x, y, bulled_width, bullet_height, velX, velY, damage){
+        this.body = new Sprite(x, y, bulled_width, bullet_height, 'n');
+        this.body.vel.x = velX;
+        this.body.vel.y = velY;
         this.body.debug = true;
         this.damage = damage;
+    }
+
+    checkOutside(arrayOfBullets){
+        if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
+            this.body.remove();
+            arrayOfBullets.splice(arrayOfBullets.indexOf(this), 1);
+        }
     }
 }
 
 class InvadersBullet extends Bullet{
-    constructor(x, y, vel, damage){
-        super(x, y, 10, 10, vel, damage);
+    constructor(x, y, velX, velY, damage){
+        super(x, y, 10, 10, velX, velY, damage);
     }
 
     checkOutside(){
-        if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
-            this.body.remove();
-            invadersBullets.splice(invadersBullets.indexOf(this), 1);
-        }
+        super.checkOutside(invadersBullets); 
     }
-
+    
     checkCollisionWithPlayer(){
         if (this.body.overlaps(player.sprite)) {
             this.body.remove();
@@ -49,15 +54,22 @@ class InvadersBullet extends Bullet{
 
 class BasicInvaderBullet extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 3, 10);
+        super(x, y, 0, 3, 10);
         this.body.img = './assets/invaderbullet.png';
     }
 }
 
 class AdvanceInvaderBullet extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 4, 20)
+        super(x, y, 0, 4, 20)
         this.body.img = './assets/invaderbullet.png'; // Here will goes a differente texture, by now im gonna use the same
+    }
+}
+
+class DiagonalInvaderBullet extends InvadersBullet{
+    constructor(x, y, velX, velY){
+        super(x, y, velX, velY, 10);
+        this.body.img = './assets/invaderbullet.png';
     }
 }
 
@@ -158,9 +170,8 @@ class Player{
     }
 
     shoot(){
-        let bullet = new Bullet(this.sprite.x, this.sprite.y, 'n');
-        bullets.push(bullet);
-        console.log(bullets);
+        let bullet = new Bullet(this.sprite.x, this.sprite.y, 5, 5, -3, 10);
+        playerBullets.push(bullet);
     }
 };
 
@@ -168,6 +179,7 @@ let player;
 let invader;
 
 let invadersBullets = [];
+let playerBullets = [];
 let invaders
 
 function setup() {
@@ -175,17 +187,19 @@ function setup() {
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
     // invaders = new Invaders();
     // invaders.spawnInvaders();
-    let bullet = new BasicInvaderBullet(100, 100);
-    let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
-    invadersBullets.push(bullet);
-    invadersBullets.push(bullet2);
-
-    
+    // let bullet = new BasicInvaderBullet(100, 100);
+    // let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    // invadersBullets.push(bullet);
+    // invadersBullets.push(bullet2);
+    let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
+    let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
+    invadersBullets.push(diagonalBullet);
+       
+ 
 }
   
 function draw() {
     background('black'); 
-
     if (kb.pressing('right')) {
         player.moveRight();
     }
@@ -201,10 +215,16 @@ function draw() {
     if (kb.presses('space')) {
         player.shoot();
     }
+    console.log(invadersBullets);
+    console.log(playerBullets);
+    
 
     invadersBullets.forEach(bullet => {
         bullet.checkCollisionWithPlayer(invadersBullets);
+        bullet.checkOutside();
     })
+
+    
 
     // invaders.moveInvaders();
 
