@@ -25,10 +25,14 @@ class Bullet{
         this.damage = damage;
     }
 
+    removeFromArray(array){
+        array.splice(array.indexOf(this), 1);
+    }
+
     checkOutside(arrayOfBullets){
         if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
             this.body.remove();
-            arrayOfBullets.splice(arrayOfBullets.indexOf(this), 1);
+            this.removeFromArray(arrayOfBullets);
         }
     }
 }
@@ -45,7 +49,7 @@ class InvadersBullet extends Bullet{
     checkCollisionWithPlayer(){
         if (this.body.overlaps(player.sprite)) {
             this.body.remove();
-            invadersBullets.splice(invadersBullets.indexOf(this), 1);
+            this.removeFromArray(invadersBullets);
             console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
         }
         
