@@ -6,30 +6,77 @@ window.addEventListener('keydown', function(event) {
 
 const WINDOW_WIDTH = 1200;
 const WINDOW_HEIGHT = 800;
-// const BULLET_WIDTH = 9;
-// const BULLET_HEIGHT = 14;
-// const BULLET_SPEED = -4;
 const AMOUNT_OF_INVADERS = 20;
 
+const isVerticalOutside = (sprite) => {
+    return sprite.y < 0 || sprite.y > WINDOW_HEIGHT - sprite.height;
+}
+
+const isHorizontalOutside = (sprite) => {
+    return sprite.x < 0 || sprite.x > WINDOW_WIDTH - sprite.width;
+}
+
 class Bullet{
-    constructor(x, y, bulled_width,bullet_height, vel){
-        this.sprite = new Sprite(x, y, bulled_width, bullet_height, type);
-        // this.sprite.img = './assets/bullet.png';
-        this.sprite.vel.y = vel;
+    constructor(x, y, bulled_width, bullet_height, velX, velY, damage){
+        this.body = new Sprite(x, y, bulled_width, bullet_height, 'n');
+        this.body.vel.x = velX;
+        this.body.vel.y = velY;
+        this.body.debug = true;
+        this.damage = damage;
     }
 
-    // checkCollision(invaders) {
-    //     invaders.forEach(invader => {
-    //       if (this.sprite.overlap(invader.sprite)) {
-    //         invader.explosion();
-    //         invader.sprite.remove();
-    //         this.sprite.remove();
-    //         bullets.splice(bullets.indexOf(this), 1);
-    //       }
-        
-    //     });
-    //   }
+    removeFromArray(array){
+        array.splice(array.indexOf(this), 1);
+    }
+
+    checkOutside(arrayOfBullets){
+        if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
+            this.body.remove();
+            this.removeFromArray(arrayOfBullets);
+        }
+    }
 }
+
+class InvadersBullet extends Bullet{
+    constructor(x, y, velX, velY, damage){
+        super(x, y, 10, 10, velX, velY, damage);
+    }
+
+    checkOutside(){
+        super.checkOutside(invadersBullets); 
+    }
+    
+    checkCollisionWithPlayer(){
+        if (this.body.overlaps(player.sprite)) {
+            this.body.remove();
+            this.removeFromArray(invadersBullets);
+            console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
+        }
+        
+    }
+}
+
+class BasicInvaderBullet extends InvadersBullet{
+    constructor(x, y){
+        super(x, y, 0, 3, 10);
+        this.body.img = './assets/basicInvaderBullet.png';
+    }
+}
+
+class AdvanceInvaderBullet extends InvadersBullet{
+    constructor(x, y){
+        super(x, y, 0, 4, 20)
+        this.body.img = './assets/advanceInvaderBullet.png'; // Here will goes a differente texture, by now im gonna use the same
+    }
+}
+
+class DiagonalInvaderBullet extends InvadersBullet{
+    constructor(x, y, velX, velY){
+        super(x, y, velX, velY, 10);
+        this.body.img = './assets/basicInvaderBullet.png';
+    }
+}
+
 
 class Invader{
     constructor(x, y, type){
@@ -127,30 +174,36 @@ class Player{
     }
 
     shoot(){
-        let bullet = new Bullet(this.sprite.x, this.sprite.y, 'n');
-        bullets.push(bullet);
-        console.log(bullets);
+        let bullet = new Bullet(this.sprite.x, this.sprite.y, 5, 5, 0, -4, 10);
+        playerBullets.push(bullet);
     }
 };
 
 let player;
 let invader;
 
-let bullets = [];
+let invadersBullets = [];
+let playerBullets = [];
 let invaders
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-    
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
     invaders = new Invaders();
     invaders.spawnInvaders();
-    
+    let bullet = new BasicInvaderBullet(100, 100);
+    let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    invadersBullets.push(bullet);
+    invadersBullets.push(bullet2);
+    // let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
+    // let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
+    // invadersBullets.push(diagonalBullet);
+       
+ 
 }
   
 function draw() {
     background('black'); 
-
     if (kb.pressing('right')) {
         player.moveRight();
     }
@@ -166,11 +219,17 @@ function draw() {
     if (kb.presses('space')) {
         player.shoot();
     }
+    console.log(invadersBullets);
+    console.log(playerBullets);
+    
 
-    bullets.forEach(bullet => {
-        bullet.checkCollision(invaders.group);
-    });
+    invadersBullets.forEach(bullet => {
+        bullet.checkCollisionWithPlayer(invadersBullets);
+        bullet.checkOutside();
+    })
 
-    invaders.moveInvaders();
+    
+
+    // invaders.moveInvaders();
 
 }
