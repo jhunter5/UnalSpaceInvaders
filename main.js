@@ -55,21 +55,21 @@ class InvadersBullet extends Bullet{
 class BasicInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 0, 3, 10);
-        this.body.img = './assets/invaderbullet.png';
+        this.body.img = './assets/basicInvaderBullet.png';
     }
 }
 
 class AdvanceInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 0, 4, 20)
-        this.body.img = './assets/invaderbullet.png'; // Here will goes a differente texture, by now im gonna use the same
+        this.body.img = './assets/advanceInvaderBullet.png'; // Here will goes a differente texture, by now im gonna use the same
     }
 }
 
 class DiagonalInvaderBullet extends InvadersBullet{
     constructor(x, y, velX, velY){
         super(x, y, velX, velY, 10);
-        this.body.img = './assets/invaderbullet.png';
+        this.body.img = './assets/basicInvaderBullet.png';
     }
 }
 
@@ -170,7 +170,7 @@ class Player{
     }
 
     shoot(){
-        let bullet = new Bullet(this.sprite.x, this.sprite.y, 5, 5, -3, 10);
+        let bullet = new Bullet(this.sprite.x, this.sprite.y, 5, 5, 0, -4, 10);
         playerBullets.push(bullet);
     }
 };
@@ -185,15 +185,15 @@ let invaders
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    // invaders = new Invaders();
-    // invaders.spawnInvaders();
-    // let bullet = new BasicInvaderBullet(100, 100);
-    // let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
-    // invadersBullets.push(bullet);
-    // invadersBullets.push(bullet2);
-    let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
-    let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
-    invadersBullets.push(diagonalBullet);
+    invaders = new Invaders();
+    invaders.spawnInvaders();
+    let bullet = new BasicInvaderBullet(100, 100);
+    let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    invadersBullets.push(bullet);
+    invadersBullets.push(bullet2);
+    // let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
+    // let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
+    // invadersBullets.push(diagonalBullet);
        
  
 }
