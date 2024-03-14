@@ -4,8 +4,8 @@ window.addEventListener('keydown', function(event) {
     }
 });
 
-const WINDOW_WIDTH = 1200;
-const WINDOW_HEIGHT = 800;
+const WINDOW_WIDTH = 1856;
+const WINDOW_HEIGHT = 930;
 const AMOUNT_OF_INVADERS = 20;
 
 const isVerticalOutside = (sprite) => {
@@ -113,6 +113,31 @@ class InvaderBoss {
         }
         return false;
     }
+    
+    updateHealthBar() {
+        const healthBar = document.getElementById('boss-health-bar');
+        const percentage = (this.health / 5000) * 100;
+        healthBar.style.width = `${percentage}%`;
+    }
+
+    getDamage(damage){
+        this.health -= damage;
+        this.updateHealthBar();
+        this.checkStatus();
+    }
+
+    checkStatus(){
+        if (this.health <= 1000 && this.lifes > 0) {
+            this.attackPattern = 1;
+        }
+        if (this.health <= 0 && this.lifes > 0) {
+            this.reborn();
+            this.attackPattern = 2;
+        }
+        if (this.lifes <= 0) {
+            this.die();
+        }
+    }
 
     die(){
         this.sprite.remove();
@@ -127,17 +152,6 @@ class InvaderBoss {
        
     }
 
-    getDamage(damage){
-        this.health -= damage;
-        if (this.health <= 0 && this.lifes > 0) {
-            this.reborn();
-        }
-        if (this.lifes <= 0) {
-            this.die();
-        }
-    }
-
-    
     move() {
         if (this.movementPattern == 0) {
             console.log(this.flag);
@@ -334,7 +348,6 @@ function setup() {
 
     invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
     // invaderBoss.reborn()
-    invaderBoss.attackPattern = 1;
     
     
        
@@ -357,6 +370,9 @@ function draw() {
     }
     if (kb.presses('space')) {
         player.shoot();
+    }
+    if (kb.presses('1')) {
+        invaderBoss.getDamage(1000);
     }
     
 
