@@ -77,6 +77,101 @@ class DiagonalInvaderBullet extends InvadersBullet{
     }
 }
 
+class InvaderBoss {
+    constructor(x, y){
+        this.sprite = new Sprite(x, y, 900, 900, 'n');
+        this.sprite.img = './assets/boss.jpg';
+        this.sprite.debug = true;
+        this.sprite.diameter = 900;
+        this.sprite.scale = 0.4;
+        this.health = 5000;
+        this.lifes = 2;
+        this.attackPattern = 0; 
+        this.attackTimer = 0;
+        this.movementPattern = 0
+        this.flag = 0;
+    }
+
+    moveRight(){
+        this.sprite.move(10, 'right', 3)
+    }
+
+    moveLeft(){
+        this.sprite.move(10, 'left', 3)
+    }
+
+    verifyRightLimit(){
+        if (this.sprite.x > WINDOW_WIDTH - 200) {
+            return true;
+        }
+        return false;
+    }
+
+    verifyLeftLimit(){
+        if (this.sprite.x < 200) {
+            return true;
+        }
+        return false;
+    }
+
+    
+    move() {
+        if (this.movementPattern == 0) {
+            console.log(this.flag);
+            if (this.flag == 0 ) {
+                if(!this.verifyRightLimit()){
+                    this.moveRight();
+                }
+                else {
+                    this.flag = 1;
+                }  
+            }
+            else if (this.flag == 1) {
+                if(!this.verifyLeftLimit()){
+                    this.moveLeft();
+                }
+                else {
+                    this.flag = 0;
+                }
+            }
+        }
+    }
+
+
+    attack () {
+        if (this.attackPattern == 0) {
+            let bullet = new BasicInvaderBullet(this.sprite.x - 100, this.sprite.y + 100);
+            let bullet2 = new BasicInvaderBullet(this.sprite.x - 50 , this.sprite.y + 100);
+            let bullet3 = new BasicInvaderBullet(this.sprite.x + 50, this.sprite.y + 100);
+            let bullet4 = new BasicInvaderBullet(this.sprite.x + 100, this.sprite.y + 100);
+            invadersBullets.push(bullet, bullet2, bullet3, bullet4);
+        }
+
+        else if (this.attackPattern == 1) {
+            let bullet = new AdvanceInvaderBullet(this.sprite.x - 150, this.sprite.y + 100);
+            let bullet2 = new AdvanceInvaderBullet(this.sprite.x - 100, this.sprite.y + 100);
+            let bullet3 = new AdvanceInvaderBullet(this.sprite.x + 100, this.sprite.y + 100);
+            let bullet4 = new AdvanceInvaderBullet(this.sprite.x + 150, this.sprite.y + 100);
+            invadersBullets.push(bullet , bullet2, bullet3, bullet4);
+        }
+    }
+
+    increaseAttackTimer (){
+        if (this.attackPattern == 0) {
+            this.attackTimer += 1;
+            if (this.attackTimer % 60 == 0){
+                this.attack()
+            }
+        }   
+
+        else if (this.attackPattern == 1) {
+            this.attackTimer += 1;
+            if (this.attackTimer % 30 == 0){
+                this.attack()
+            }
+        }
+    }
+}
 
 class Invader{
     constructor(x, y, type){
@@ -129,7 +224,6 @@ class Invaders{
             this.spawnInvaders();
         }
         this.group.forEach(invader => {
-            console.log(this.repetition);
             invader.sprite.x += this.movement;
         });
         if (this.group[this.group.length - 1].sprite.x > WINDOW_WIDTH - 50) {
@@ -185,19 +279,24 @@ let invader;
 let invadersBullets = [];
 let playerBullets = [];
 let invaders
+let invaderBoss
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    invaders = new Invaders();
-    invaders.spawnInvaders();
-    let bullet = new BasicInvaderBullet(100, 100);
-    let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
-    invadersBullets.push(bullet);
-    invadersBullets.push(bullet2);
+    // invaders = new Invaders();
+    // invaders.spawnInvaders();
+    // let bullet = new BasicInvaderBullet(100, 100);
+    // let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
+    // invadersBullets.push(bullet);
+    // invadersBullets.push(bullet2);
     // let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
     // let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
     // invadersBullets.push(diagonalBullet);
+
+    invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
+    
+    
        
  
 }
@@ -219,15 +318,16 @@ function draw() {
     if (kb.presses('space')) {
         player.shoot();
     }
-    console.log(invadersBullets);
-    console.log(playerBullets);
     
 
     invadersBullets.forEach(bullet => {
         bullet.checkCollisionWithPlayer(invadersBullets);
         bullet.checkOutside();
     })
-
+    invaderBoss.increaseAttackTimer();
+    invaderBoss.move();
+    invaderBoss.attackPattern = 1;
+    // console.log(invaderBoss.attackTimer);
     
 
     // invaders.moveInvaders();
