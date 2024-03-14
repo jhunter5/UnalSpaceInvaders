@@ -114,6 +114,29 @@ class InvaderBoss {
         return false;
     }
 
+    die(){
+        this.sprite.remove();
+    }
+
+    reborn(){
+        this.sprite.img = './assets/boss2.jpg';
+        this.lifes -= 1;
+        this.health = 5000;
+        this.sprite.scale = 1;
+        this.sprite.diameter = 200;
+       
+    }
+
+    getDamage(damage){
+        this.health -= damage;
+        if (this.health <= 0 && this.lifes > 0) {
+            this.reborn();
+        }
+        if (this.lifes <= 0) {
+            this.die();
+        }
+    }
+
     
     move() {
         if (this.movementPattern == 0) {
@@ -154,6 +177,14 @@ class InvaderBoss {
             let bullet4 = new AdvanceInvaderBullet(this.sprite.x + 150, this.sprite.y + 100);
             invadersBullets.push(bullet , bullet2, bullet3, bullet4);
         }
+
+        else if (this.attackPattern == 2) {
+            let bullet = new DiagonalInvaderBullet(this.sprite.x - 100, this.sprite.y, 3, 5);
+            let bullet2 = new DiagonalInvaderBullet(this.sprite.x -50, this.sprite.y, -3, 5);
+            let bullet3 = new DiagonalInvaderBullet(this.sprite.x + 50, this.sprite.y, 3, 5);
+            let bullet4 = new DiagonalInvaderBullet(this.sprite.x + 100, this.sprite.y, -3, 5);
+            invadersBullets.push(bullet, bullet2, bullet3, bullet4);
+        }
     }
 
     increaseAttackTimer (){
@@ -166,7 +197,14 @@ class InvaderBoss {
 
         else if (this.attackPattern == 1) {
             this.attackTimer += 1;
-            if (this.attackTimer % 30 == 0){
+            if (this.attackTimer % 40 == 0){
+                this.attack()
+            }
+        }
+
+        else if (this.attackPattern == 2) {
+            this.attackTimer += 1;
+            if (this.attackTimer % 20 == 0){
                 this.attack()
             }
         }
@@ -295,6 +333,8 @@ function setup() {
     // invadersBullets.push(diagonalBullet);
 
     invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
+    // invaderBoss.reborn()
+    invaderBoss.attackPattern = 1;
     
     
        
@@ -326,7 +366,7 @@ function draw() {
     })
     invaderBoss.increaseAttackTimer();
     invaderBoss.move();
-    invaderBoss.attackPattern = 1;
+    
     // console.log(invaderBoss.attackTimer);
     
 
