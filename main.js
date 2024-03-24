@@ -16,6 +16,14 @@ const isHorizontalOutside = (sprite) => {
     return sprite.x < 0 || sprite.x > WINDOW_WIDTH - sprite.width;
 }
 
+const isInRightLimit = (sprite) => {
+    return sprite.x > WINDOW_WIDTH - sprite.width / 2;
+}
+
+const isInLeftLimit = (sprite) => {
+    return sprite.x < sprite.width / 2;
+}
+
 class Bullet{
     constructor(x, y, bulled_width, bullet_height, velX, velY, damage){
         this.body = new Sprite(x, y, bulled_width, bullet_height, 'n');
@@ -52,7 +60,6 @@ class InvadersBullet extends Bullet{
             this.removeFromArray(invadersBullets);
             console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
         }
-        
     }
 }
 
@@ -92,28 +99,103 @@ class InvaderBoss {
         this.flag = 0;
     }
 
-    moveRight(){
-        this.sprite.move(10, 'right', 3)
+    moveRight(velocity){
+        this.sprite.vel.x = velocity;
+        
     }
 
-    moveLeft(){
-        this.sprite.move(10, 'left', 3)
+    moveLeft(velocity){
+        this.sprite.vel.x = -velocity;
     }
 
-    verifyRightLimit(){
-        if (this.sprite.x > WINDOW_WIDTH - 200) {
-            return true;
+    moveUp(velocity){
+        this.sprite.vel.y = -velocity;
+    }
+
+    moveDown(velocity){
+        this.sprite.vel.y = velocity;
+    }
+
+    moveZigZag(velocity){
+        if (this.flag == 0 ) {
+            if(!isInRightLimit(this.sprite)){
+                this.moveRight(velocity);
+                this.moveDown(velocity);
+            }
+            else {
+                this.flag = 1;
+            }  
         }
-        return false;
+        else if (this.flag == 1) {
+            if(!isInLeftLimit(this.sprite)){
+                this.moveLeft(velocity);
+                this.moveDown(velocity);
+            }
+            else {
+                this.flag = 0;
+            }
+        }
     }
 
-    verifyLeftLimit(){
-        if (this.sprite.x < 200) {
-            return true;
+    move() {
+        if (this.movementPattern == 0) {
+            if (this.flag == 0 ) {
+                if(!isInRightLimit(this.sprite)){
+                    this.moveRight(3);
+                }
+                else {
+                    this.flag = 1;
+                }  
+            }
+            else if (this.flag == 1) {
+                if(!isInLeftLimit(this.sprite)){
+                    this.moveLeft(3);
+                }
+                else {
+                    this.flag = 0;
+                }
+            }
         }
-        return false;
+        else if (this.movementPattern == 1) {
+            if (this.flag == 0 ) {
+                if(!isInRightLimit(this.sprite)){
+                    this.moveRight(5);
+                }
+                else {
+                    this.flag = 1;
+                }  
+            }
+            else if (this.flag == 1) {
+                if(!isInLeftLimit(this.sprite)){
+                    this.moveLeft(5);
+                }
+                else {
+                    this.flag = 0;
+                }
+            }
+        }
+        else if (this.movementPattern == 2) {
+            if (this.flag == 0 ) {
+                if(!isInRightLimit(this.sprite)){
+                    this.moveRight(7);
+                    this.moveDown(3);
+
+                }
+                else {
+                    this.flag = 1;
+                }  
+            }
+            else if (this.flag == 1) {
+                if(!isInLeftLimit(this.sprite)){
+                    this.moveLeft(7);
+                }
+                else {
+                    this.flag = 0;
+                }
+            }
+        }
     }
-    
+
     updateHealthBar() {
         const healthBar = document.getElementById('boss-health-bar');
         const percentage = (this.health / 5000) * 100;
@@ -149,31 +231,7 @@ class InvaderBoss {
         this.health = 5000;
         this.sprite.scale = 1;
         this.sprite.diameter = 200;
-       
     }
-
-    move() {
-        if (this.movementPattern == 0) {
-            console.log(this.flag);
-            if (this.flag == 0 ) {
-                if(!this.verifyRightLimit()){
-                    this.moveRight();
-                }
-                else {
-                    this.flag = 1;
-                }  
-            }
-            else if (this.flag == 1) {
-                if(!this.verifyLeftLimit()){
-                    this.moveLeft();
-                }
-                else {
-                    this.flag = 0;
-                }
-            }
-        }
-    }
-
 
     attack () {
         if (this.attackPattern == 0) {
@@ -347,6 +405,7 @@ function setup() {
     // invadersBullets.push(diagonalBullet);
 
     invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
+    
     // invaderBoss.reborn()
     
     
@@ -382,6 +441,7 @@ function draw() {
     })
     invaderBoss.increaseAttackTimer();
     invaderBoss.move();
+    
     
     // console.log(invaderBoss.attackTimer);
     
