@@ -4,8 +4,8 @@ window.addEventListener('keydown', function(event) {
     }
 });
 
-const WINDOW_WIDTH = 1856;
-const WINDOW_HEIGHT = 930;
+const WINDOW_WIDTH = window.innerWidth;
+const WINDOW_HEIGHT = window.innerHeight;       
 const AMOUNT_OF_INVADERS = 20;
 
 const isVerticalOutside = (sprite) => {
@@ -90,7 +90,7 @@ class InvaderBoss {
         this.sprite.img = './assets/boss.jpg';
         this.sprite.debug = true;
         this.sprite.diameter = 900;
-        this.sprite.scale = 0.4;
+        this.sprite.scale = 0.2;
         this.health = 5000;
         this.lifes = 2;
         this.attackPattern = 0; 
@@ -116,26 +116,15 @@ class InvaderBoss {
         this.sprite.vel.y = velocity;
     }
 
-    moveZigZag(velocity){
-        if (this.flag == 0 ) {
-            if(!isInRightLimit(this.sprite)){
-                this.moveRight(velocity);
-                this.moveDown(velocity);
-            }
-            else {
-                this.flag = 1;
-            }  
-        }
-        else if (this.flag == 1) {
-            if(!isInLeftLimit(this.sprite)){
-                this.moveLeft(velocity);
-                this.moveDown(velocity);
-            }
-            else {
-                this.flag = 0;
-            }
-        }
+    verifyUpperLimit(){
+        return this.sprite.y < 50;
     }
+
+    verifyLowerLimit(){
+        return this.sprite.y > 150;
+    }
+
+
 
     move() {
         if (this.movementPattern == 0) {
@@ -176,21 +165,39 @@ class InvaderBoss {
         }
         else if (this.movementPattern == 2) {
             if (this.flag == 0 ) {
-                if(!isInRightLimit(this.sprite)){
-                    this.moveRight(7);
+                if(!isInRightLimit(this.sprite) && !this.verifyLowerLimit()){
+                    this.moveRight(4);
                     this.moveDown(3);
-
                 }
                 else {
-                    this.flag = 1;
+                    this.verifyLowerLimit() ? this.flag = 1 : this.flag = 2;
                 }  
             }
             else if (this.flag == 1) {
-                if(!isInLeftLimit(this.sprite)){
-                    this.moveLeft(7);
+                if(!isInRightLimit(this.sprite) && !this.verifyUpperLimit()){
+                    this.moveRight(4);
+                    this.moveUp(3);
                 }
                 else {
-                    this.flag = 0;
+                    this.verifyUpperLimit() ? this.flag = 0 : this.flag = 3;
+                }
+            }
+            else if (this.flag == 2) {
+                if(!isInLeftLimit(this.sprite) && !this.verifyLowerLimit()){
+                    this.moveLeft(4);
+                    this.moveDown(3);
+                }
+                else {
+                    this.verifyLowerLimit() ? this.flag = 3 : this.flag = 0;
+                }
+            }
+            else if (this.flag == 3) {
+                if(!isInLeftLimit(this.sprite) && !this.verifyUpperLimit()){
+                    this.moveLeft(4);
+                    this.moveUp(3);
+                }
+                else {
+                    this.verifyUpperLimit() ? this.flag = 2 : this.flag = 1;
                 }
             }
         }
@@ -405,6 +412,7 @@ function setup() {
     // invadersBullets.push(diagonalBullet);
 
     invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
+    invaderBoss.movementPattern = 2;
     
     // invaderBoss.reborn()
     
