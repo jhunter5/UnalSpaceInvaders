@@ -63,6 +63,35 @@ class InvadersBullet extends Bullet{
     }
 }
 
+class PlayerBullet extends Bullet{
+    constructor(x, y, velX, velY, damage){
+        super(x, y, 10, 10, velX, velY, damage);
+    }
+
+    checkOutside(){
+        super.checkOutside(playerBullets);
+    }
+
+    checkCollisionWithInvader(){
+        invaders.group.forEach(invader => {
+            if (this.body.overlaps(invader.sprite)) {
+                this.body.remove();
+                this.removeFromArray(playerBullets);
+                invader.explosion();
+                invaders.group.splice(invaders.group.indexOf(invader), 1);
+            }
+        });
+    }
+
+    checkCollisionWithInvaderBoss(){
+        if (this.body.overlaps(invaderBoss.sprite)) {
+            this.body.remove();
+            this.removeFromArray(playerBullets);
+            invaderBoss.getDamage(this.damage);
+        }
+    }
+}
+
 class BasicInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 0, 3, 10);
@@ -385,7 +414,7 @@ class Player{
     }
 
     shoot(){
-        let bullet = new Bullet(this.sprite.x, this.sprite.y, 5, 5, 0, -4, 10);
+        let bullet = new PlayerBullet(this.sprite.x, this.sprite.y, 5, 5, 0, -4, 10);
         playerBullets.push(bullet);
     }
 };
@@ -437,9 +466,6 @@ function draw() {
     }
     if (kb.presses('space')) {
         player.shoot();
-    }
-    if (kb.presses('1')) {
-        invaderBoss.getDamage(1000);
     }
     
 
