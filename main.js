@@ -66,6 +66,7 @@ class InvadersBullet extends Bullet{
 class PlayerBullet extends Bullet{
     constructor(x, y, velX, velY, damage){
         super(x, y, 10, 10, velX, velY, damage);
+        this.body.img = './assets/bullet.png'
     }
 
     checkOutside(){
@@ -128,6 +129,11 @@ class InvaderBoss {
         this.flag = 0;
     }
 
+    stay(){
+        this.sprite.vel.x = 0;
+        this.sprite.vel.y = 0;
+    }
+
     moveRight(velocity){
         this.sprite.vel.x = velocity;
         
@@ -153,13 +159,11 @@ class InvaderBoss {
         return this.sprite.y > 150;
     }
 
-
-
     move() {
         if (this.movementPattern == 0) {
             if (this.flag == 0 ) {
                 if(!isInRightLimit(this.sprite)){
-                    this.moveRight(3);
+                    this.moveRight(4);
                 }
                 else {
                     this.flag = 1;
@@ -167,7 +171,7 @@ class InvaderBoss {
             }
             else if (this.flag == 1) {
                 if(!isInLeftLimit(this.sprite)){
-                    this.moveLeft(3);
+                    this.moveLeft(4);
                 }
                 else {
                     this.flag = 0;
@@ -245,15 +249,18 @@ class InvaderBoss {
     }
 
     checkStatus(){
-        if (this.health <= 1000 && this.lifes > 0) {
+        if (this.health <= 2500 && this.lifes == 2) {
+            this.movementPattern = 2;
             this.attackPattern = 1;
         }
-        if (this.health <= 0 && this.lifes > 0) {
+        if (this.health == 0 && this.lifes == 2) {
+            this.lifes -= 1;
             this.reborn();
-            this.attackPattern = 2;
         }
-        if (this.lifes <= 0) {
+
+        if ( this.health == 0 && this.lifes == 1) {
             this.die();
+            invaderBoss = null
         }
     }
 
@@ -263,10 +270,16 @@ class InvaderBoss {
 
     reborn(){
         this.sprite.img = './assets/boss2.jpg';
-        this.lifes -= 1;
-        this.health = 5000;
         this.sprite.scale = 1;
         this.sprite.diameter = 200;
+        this.sprite.x = WINDOW_WIDTH/2;
+        this.sprite.y = 150;
+        this.flag = 0
+        this.stay()
+        this.health = 5000;
+        this.updateHealthBar()
+        this.movementPattern = 1;
+        this.attackPattern = 2;
     }
 
     attack () {
@@ -305,7 +318,7 @@ class InvaderBoss {
 
         else if (this.attackPattern == 1) {
             this.attackTimer += 1;
-            if (this.attackTimer % 40 == 0){
+            if (this.attackTimer % 30 == 0){
                 this.attack()
             }
         }
@@ -365,7 +378,7 @@ class Invaders{
         }
     }
 
-    moveInvaders(){
+    move(){
         if (this.group.length == 0) {
             this.spawnInvaders();
         }
@@ -405,81 +418,62 @@ class Player{
         this.sprite.move(10, 'left', 3)
     }
 
-    moveUp(){
-        this.sprite.move(10, 'up', 3)
-    }
-
-    moveDown(){
-        this.sprite.move(10, 'down', 3)
-    }
 
     shoot(){
-        let bullet = new PlayerBullet(this.sprite.x, this.sprite.y, 5, 5, 0, -4, 10);
+        let bullet = new PlayerBullet(this.sprite.x, this.sprite.y, 0, -7, 50);
         playerBullets.push(bullet);
     }
 };
 
 let player;
-let invader;
+let invaders
+let invaderBoss
 
 let invadersBullets = [];
 let playerBullets = [];
-let invaders
-let invaderBoss
+
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    // invaders = new Invaders();
-    // invaders.spawnInvaders();
-    // let bullet = new BasicInvaderBullet(100, 100);
-    // let bullet2 = new AdvanceInvaderBullet(WINDOW_WIDTH/2, WINDOW_HEIGHT - 700)
-    // invadersBullets.push(bullet);
-    // invadersBullets.push(bullet2);
-    // let diagonalBullet = new DiagonalInvaderBullet(500, 100, 5, 5);
-    // let diagonalBullet2 = new DiagonalInvaderBullet(500, 100, -5, 5);
-    // invadersBullets.push(diagonalBullet);
-
-    invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
-    invaderBoss.movementPattern = 2;
-    
-    // invaderBoss.reborn()
+    invaders = new Invaders()
+    invaders.spawnInvaders()
+    // invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
     
     
-       
- 
 }
   
 function draw() {
     background('black'); 
+
     if (kb.pressing('right')) {
         player.moveRight();
     }
     if (kb.pressing('left')) {
         player.moveLeft();
     }
-    if (kb.pressing('up')) {
-        player.moveUp();
-    }
-    if (kb.pressing('down')) {
-        player.moveDown();
-    }
     if (kb.presses('space')) {
         player.shoot();
+        // invaderBoss.getDamage(1000)
     }
     
 
     invadersBullets.forEach(bullet => {
-        bullet.checkCollisionWithPlayer(invadersBullets);
+        bullet.checkCollisionWithPlayer();
         bullet.checkOutside();
     })
-    invaderBoss.increaseAttackTimer();
-    invaderBoss.move();
-    
-    
-    // console.log(invaderBoss.attackTimer);
-    
 
-    // invaders.moveInvaders();
+    if (invaderBoss != null){
+        invaderBoss.increaseAttackTimer();
+        invaderBoss.move();
+    }
+
+    invaders.move()
+    
+    playerBullets.forEach(bullet => {
+        // bullet.checkCollisionWithInvaderBoss();
+        bullet.checkCollisionWithInvader()
+        bullet.checkOutside();
+    })
 
 }
