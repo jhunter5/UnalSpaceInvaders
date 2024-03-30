@@ -4,9 +4,9 @@ window.addEventListener('keydown', function(event) {
     }
 });
 
-const WINDOW_WIDTH = window.innerWidth - 20;
+const WINDOW_WIDTH = window.innerWidth - 100;
 const WINDOW_HEIGHT = window.innerHeight - 50;       
-const AMOUNT_OF_INVADERS = 20;
+const AMOUNT_OF_INVADERS = 40;
 
 const isVerticalOutside = (sprite) => {
     return sprite.y < 0 || sprite.y > WINDOW_HEIGHT - sprite.height;
@@ -23,6 +23,39 @@ const isInRightLimit = (sprite) => {
 const isInLeftLimit = (sprite) => {
     return sprite.x < sprite.width / 2;
 }
+
+let player = null;
+let invaders = null;
+let invaderBoss = null;
+
+let invadersWave = 0
+let score = 0;
+let gameStatus = 'playing';
+let invadersBullets = [];
+let playerBullets = [];
+
+let gameOverElement;
+let restartButton;
+let scoreElement;
+
+document.addEventListener('DOMContentLoaded', function() {
+    gameOverElement = document.querySelector(".game-over");
+    restartButton = document.querySelector("#restart-button");
+    scoreElement = document.querySelector("#score");
+
+
+    restartButton.addEventListener("click", () => {
+        clear();
+        removeAllSprites();
+        gameStatus = 'playing';
+        player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
+        invaders = new Invaders()
+        invaderBoss = null;
+        invadersWave = 0;
+        invaders.spawnInvaders('normal')
+        loop();
+    });
+});
 
 class Bullet{
     constructor(x, y, bulled_width, bullet_height, velX, velY, damage){
@@ -41,6 +74,9 @@ class Bullet{
         if (isVerticalOutside(this.body) || isHorizontalOutside(this.body)) {
             this.body.remove();
             this.removeFromArray(arrayOfBullets);
+            if (arrayOfBullets == playerBullets) {
+                score > 0 ? score -= 10 : null;
+            }
         }
     }
 }
@@ -58,7 +94,7 @@ class InvadersBullet extends Bullet{
         if (this.body.overlaps(player.sprite)) {
             this.body.remove();
             this.removeFromArray(invadersBullets);
-            console.log(`hit with ${this.damage} damage`); // Here will go something like player.getDamage(this.damage)
+            player.getDamage(this.damage);
         }
     }
 }
@@ -94,14 +130,14 @@ class PlayerBullet extends Bullet{
 
 class BasicInvaderBullet extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 0, 3, 10);
+        super(x, y, 0, 5, 10);
         this.body.img = './assets/basicInvaderBullet.png';
     }
 }
 
 class AdvanceInvaderBullet extends InvadersBullet{
     constructor(x, y){
-        super(x, y, 0, 4, 20)
+        super(x, y, 0, 6, 20)
         this.body.img = './assets/advanceInvaderBullet.png'; // Here will goes a differente texture, by now im gonna use the same
     }
 }
@@ -251,13 +287,16 @@ class InvaderBoss {
         if (this.health <= 2500 && this.lifes == 2) {
             this.movementPattern = 2;
             this.attackPattern = 1;
+            score += 100;
         }
         if (this.health == 0 && this.lifes == 2) {
             this.lifes -= 1;
+            score += 500;
             this.reborn();
         }
 
         if ( this.health == 0 && this.lifes == 1) {
+            score += 1000;
             this.die();
             invaderBoss = null
         }
@@ -369,6 +408,12 @@ class Invader{
     }
 
     die(invader){
+        if (invader.type == 'normal') {
+            score += 20;
+        }
+        else if (invader.type == 'advance') {
+            score += 30;
+        }
         invaders.group.splice(invaders.group.indexOf(invader), 1);
         this.sprite.remove();
         let explosion = new Sprite(this.sprite.x, this.sprite.y, 50, 50, 'n');
@@ -377,12 +422,16 @@ class Invader{
         explosion.diameter = 50;
         explosion.life = 30;
     }
+
+    checkCollideBottom(){
+        return this.sprite.y > WINDOW_HEIGHT - (this.sprite.height + player.sprite.height + 50);
+    }
 }
 
 class Invaders{
     constructor() {
         this.group = new Array();
-        this.movement = 5;  
+        this.movement = 7;  
         this.repetition = 0;
         this.attackTimer = 0;
     }
@@ -413,17 +462,17 @@ class Invaders{
           invader.sprite.x += this.movement;
         });
       
-        if (rightInvader.sprite.x > WINDOW_WIDTH - 50) {
-          this.movement = -5;
+        if (isInRightLimit(rightInvader.sprite)) {
+          this.movement = -7;
           this.repetition += 1;
-        } else if (leftInvader.sprite.x < 50) {
-          this.movement = 5;
+        } else if (isInLeftLimit(leftInvader.sprite)) {
+          this.movement = 7;
           this.repetition += 1;
         }
       
         if (this.repetition % 2 == 0 && this.repetition != 0) {
           this.group.forEach(invader => {
-            invader.sprite.y += 30;
+            invader.sprite.y += 40;
           });
           this.repetition = 0;
         }
@@ -432,12 +481,16 @@ class Invaders{
 
     shoot(){
         this.attackTimer += 1;
-        if (this.attackTimer % 40 == 0){
-            for (let i = 0; i < 4; i++) {
+        if (this.attackTimer % 35 == 0){
+            for (let i = 0; i < 5; i++) {
                 let randomInvader = this.group[Math.floor(Math.random() * this.group.length)];
                 randomInvader.shoot();
             }
         }
+    }
+
+    checkCollideBottom(){
+        this.group.some(invader => invader.checkCollideBottom()) ? gameStatus = 'game-over' : null;
     }
 }
 
@@ -447,6 +500,7 @@ class Player{
         this.sprite.img = './assets/ship.png'; 
         this.sprite.diameter = 40;
         this.sprite.debug = true;
+        this.life = 120;
     }
 
     moveRight(){
@@ -457,28 +511,41 @@ class Player{
         this.sprite.move(10, 'left', 3)
     }
 
-
     shoot(){
         let bullet = new PlayerBullet(this.sprite.x, this.sprite.y, 0, -7, 50);
         playerBullets.push(bullet);
     }
+
+    getDamage(damage){ 
+        this.life -= damage;
+    }
+
+    checkDeath(){
+        if (this.life == 0) {
+            gameStatus = 'game-over';
+        }
+    }
 };
 
+function removeAllSprites(){
+    player.sprite.remove();
+    playerBullets.forEach(bullet => bullet.body.remove());
+    if (invaders != null){
+        invaders.group.forEach(invader => invader.sprite.remove());
+    }
+    invadersBullets.forEach(bullet => bullet.body.remove());
+    if (invaderBoss != null){
+        invaderBoss.sprite.remove();
+    }
+}
 
-
-let player = null;
-let invaders = null;
-let invaderBoss = null;
-let invadersWave = 0
-
-let invadersBullets = [];
-let playerBullets = [];
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
     invaders = new Invaders()
     invaders.spawnInvaders('normal')
+    document.getElementById("boss-health-bar").style.display = "none";
 }
   
 function draw() {
@@ -496,6 +563,7 @@ function draw() {
     }
     
     if (invaderBoss != null){
+        document.getElementById("boss-health-bar").style.display = "block";
         invaderBoss.increaseAttackTimer();
         invaderBoss.move();
     }
@@ -503,6 +571,7 @@ function draw() {
     if (invaders != null){
         invaders.move()
         invaders.shoot()
+        invaders.checkCollideBottom()
     }
     
     if (playerBullets.length > 0) {
@@ -543,5 +612,17 @@ function draw() {
         }
     }
 
-    
+    player.checkDeath();
+
+    if (gameStatus == 'game-over') {
+        noLoop();
+        gameOverElement.classList.add("visible");
+        scoreElement.textContent = score;
+    } else {
+        gameOverElement.classList.remove("visible");
+    }
+
+    console.log(score)
+    console.log('vida', player.life)
+    console.log('estado', gameStatus)
 }
