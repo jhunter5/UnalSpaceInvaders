@@ -1,0 +1,37 @@
+#boss-health-bar {
+    height: 20px;
+    background-color: green;
+}
+
+.game-over {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+  
+.game-over.visible {
+    opacity: 0.5;
+}
+
+#restart-button {
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: #009933;
+    color: white;
+    cursor: pointer;
+}
