@@ -4,8 +4,8 @@ window.addEventListener('keydown', function(event) {
     }
 });
 
-const WINDOW_WIDTH = window.innerWidth - 100;
-const WINDOW_HEIGHT = window.innerHeight - 50;       
+let WINDOW_WIDTH ;
+let WINDOW_HEIGHT;       
 const AMOUNT_OF_INVADERS = 40;
 
 const isVerticalOutside = (sprite) => {
@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     gameOverElement = document.querySelector(".game-over");
     restartButton = document.querySelector("#restart-button");
     scoreElement = document.querySelector("#score");
+    
 
 
     restartButton.addEventListener("click", () => {
@@ -62,7 +63,7 @@ class Bullet{
         this.body = new Sprite(x, y, bulled_width, bullet_height, 'n');
         this.body.vel.x = velX;
         this.body.vel.y = velY;
-        this.body.debug = true;
+        this.body.debug = false;
         this.damage = damage;
     }
 
@@ -153,7 +154,7 @@ class InvaderBoss {
     constructor(x, y){
         this.sprite = new Sprite(x, y, 900, 900, 'n');
         this.sprite.img = './assets/boss.jpg';
-        this.sprite.debug = true;
+        this.sprite.debug = false;
         this.sprite.diameter = 900;
         this.sprite.scale = 0.2;
         this.health = 5000;
@@ -382,7 +383,7 @@ class Invader{
         }
         this.sprite.diameter = 30;
         this.sprite.scale = 1;
-        this.sprite.debug = true;
+        this.sprite.debug = false;
     }
 
     shoot(){
@@ -499,7 +500,7 @@ class Player{
         this.sprite = new Sprite(x, y, 50, 50, 'k');
         this.sprite.img = './assets/ship.png'; 
         this.sprite.diameter = 40;
-        this.sprite.debug = true;
+        this.sprite.debug = false;
         this.life = 120;
     }
 
@@ -539,29 +540,44 @@ function removeAllSprites(){
     }
 }
 
-
+let canvas
 function setup() {
-    createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+    gameHolder = document.querySelector("#game-holder");
+    WINDOW_WIDTH = gameHolder.offsetWidth;
+    WINDOW_HEIGHT = gameHolder.offsetHeight;
+    canvas = createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+    canvas.parent('game-holder');
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
     invaders = new Invaders()
     invaders.spawnInvaders('normal')
     document.getElementById("boss-health-bar").style.display = "none";
-}
-  
-function draw() {
-    background('black'); 
+    space = loadImage('./assets/space.jpg');
+};
 
+function keyPressed() {
+    if (key == 'p' || key == 'P') {
+        if (gameStatus == 'playing') {
+            noLoop();
+            gameStatus = 'paused';
+        }
+        else if (gameStatus == 'paused') {
+            loop();
+            gameStatus = 'playing';
+        }
+    }
+    if (keyCode === 32) {
+        player.shoot();
+    }
+}
+
+function draw() {
+    background(space);
     if (kb.pressing('right')) {
         player.moveRight();
     }
     if (kb.pressing('left')) {
         player.moveLeft();
     }
-    if (kb.presses('space')) {
-        player.shoot();
-        // invaderBoss.getDamage(1000)
-    }
-    
     if (invaderBoss != null){
         document.getElementById("boss-health-bar").style.display = "block";
         invaderBoss.increaseAttackTimer();

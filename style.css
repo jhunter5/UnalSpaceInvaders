@@ -1,3 +1,33 @@
+html, body {
+    height: 100%;
+}
+  
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url(./assets/background.png);
+}
+
+#title {
+    font-size: 1.5em;
+    color: white;
+    text-align: center;;
+}
+
+#game-holder {
+    position: relative;
+    width: 1200px;
+    height: 850px;
+    background-color: #333;
+    border: 5px solid #666;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
 #boss-health-bar {
     height: 20px;
     background-color: green;
