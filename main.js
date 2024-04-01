@@ -2,6 +2,9 @@ window.addEventListener('keydown', function(event) {
     if (event.keyCode === 32) {
       event.preventDefault();
     }
+    if (event.keyCode === 37 || event.keyCode === 39) {
+      event.preventDefault();
+    }
 });
 
 let WINDOW_WIDTH ;
@@ -42,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     gameOverElement = document.querySelector(".game-over");
     restartButton = document.querySelector("#restart-button");
     scoreElement = document.querySelector("#score");
+    document.body.style.zoom = "65%";
     
 
 
