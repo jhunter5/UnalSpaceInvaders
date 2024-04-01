@@ -19,8 +19,8 @@ body {
 
 #game-holder {
     position: relative;
-    width: 1200px;
-    height: 850px;
+    width: 100em;
+    height: 52em;
     background-color: #333;
     border: 5px solid #666;
     border-radius: 10px;

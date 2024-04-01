@@ -323,27 +323,41 @@ class InvaderBoss {
 
     attack () {
         if (this.attackPattern == 0) {
-            let bullet = new BasicInvaderBullet(this.sprite.x - 100, this.sprite.y + 100);
-            let bullet2 = new BasicInvaderBullet(this.sprite.x - 50 , this.sprite.y + 100);
-            let bullet3 = new BasicInvaderBullet(this.sprite.x + 50, this.sprite.y + 100);
-            let bullet4 = new BasicInvaderBullet(this.sprite.x + 100, this.sprite.y + 100);
-            invadersBullets.push(bullet, bullet2, bullet3, bullet4);
+            let x = this.sprite.x - 100;
+            let y = this.sprite.y + 100;
+            for (let i = 0; i < 5; i++) {
+                let bullet = new BasicInvaderBullet(x, y);
+                invadersBullets.push(bullet);
+                x += 50;
+            }
         }
 
         else if (this.attackPattern == 1) {
-            let bullet = new AdvanceInvaderBullet(this.sprite.x - 150, this.sprite.y + 100);
-            let bullet2 = new AdvanceInvaderBullet(this.sprite.x - 100, this.sprite.y + 100);
-            let bullet3 = new AdvanceInvaderBullet(this.sprite.x + 100, this.sprite.y + 100);
-            let bullet4 = new AdvanceInvaderBullet(this.sprite.x + 150, this.sprite.y + 100);
-            invadersBullets.push(bullet , bullet2, bullet3, bullet4);
+            let x = this.sprite.x - 150;
+            let y = this.sprite.y + 100;
+            for (let i = 0; i < 5; i++) {
+                let bullet = new AdvanceInvaderBullet(x, y);
+                invadersBullets.push(bullet);
+                if (i == 2) {
+                    x = this.sprite.x + 100;
+                }
+                x += 50;
+            }
         }
 
         else if (this.attackPattern == 2) {
-            let bullet = new DiagonalInvaderBullet(this.sprite.x - 100, this.sprite.y, 3, 5);
-            let bullet2 = new DiagonalInvaderBullet(this.sprite.x -50, this.sprite.y, -3, 5);
-            let bullet3 = new DiagonalInvaderBullet(this.sprite.x + 50, this.sprite.y, 3, 5);
-            let bullet4 = new DiagonalInvaderBullet(this.sprite.x + 100, this.sprite.y, -3, 5);
-            invadersBullets.push(bullet, bullet2, bullet3, bullet4);
+            let x = this.sprite.x - 100;
+            let y = this.sprite.y;
+            let velX = 3;
+            for (let i = 0; i < 5; i++) {
+                let bullet = new DiagonalInvaderBullet(x, y, velX, 5);
+                invadersBullets.push(bullet);   
+                if (i == 2) {
+                    x = this.sprite.x + 100;
+                }
+                velX *= -1;
+                x += 50;
+            }
         }
     }
 
@@ -522,7 +536,7 @@ class Player{
     }
 
     checkDeath(){
-        if (this.life == 0) {
+        if (this.life <= 0) {
             gameStatus = 'game-over';
         }
     }
@@ -540,20 +554,6 @@ function removeAllSprites(){
     }
 }
 
-let canvas
-function setup() {
-    gameHolder = document.querySelector("#game-holder");
-    WINDOW_WIDTH = gameHolder.offsetWidth;
-    WINDOW_HEIGHT = gameHolder.offsetHeight;
-    canvas = createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-    canvas.parent('game-holder');
-    player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    invaders = new Invaders()
-    invaders.spawnInvaders('normal')
-    document.getElementById("boss-health-bar").style.display = "none";
-    space = loadImage('./assets/space.jpg');
-};
-
 function keyPressed() {
     if (key == 'p' || key == 'P') {
         if (gameStatus == 'playing') {
@@ -570,7 +570,32 @@ function keyPressed() {
     }
 }
 
+function preload() {
+    soundFormats('mp3', 'ogg');
+    song = loadSound('./assets/Space Invaders - Space Invaders.mp3');
+}
+
+let canvas
+
+function setup() {
+    song.loop();
+    gameHolder = document.querySelector("#game-holder");
+    WINDOW_WIDTH = gameHolder.offsetWidth;
+    WINDOW_HEIGHT = gameHolder.offsetHeight;
+    console.log(WINDOW_WIDTH, WINDOW_HEIGHT)
+    canvas = createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+    canvas.parent('game-holder');
+    player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
+    invaders = new Invaders()
+    invaders.spawnInvaders('normal')
+    document.getElementById("boss-health-bar").style.display = "none";
+    space = loadImage('./assets/space.jpg');
+    
+};
+
+
 function draw() {
+    
     background(space);
     if (kb.pressing('right')) {
         player.moveRight();
@@ -638,7 +663,7 @@ function draw() {
         gameOverElement.classList.remove("visible");
     }
 
-    console.log(score)
-    console.log('vida', player.life)
-    console.log('estado', gameStatus)
+    // console.log(score)
+    // console.log('vida', player.life)
+    // console.log('estado', gameStatus)
 }
