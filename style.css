@@ -8,7 +8,9 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-image: no-repeat url(./assets/background.png);
+    background-image: url(./assets/background.png);
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 #title {
