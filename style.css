@@ -2,13 +2,15 @@ html, body {
     height: 100%;
 }
   
-body {
+body{
     margin: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-image: url(./assets/background.png);
+    /* background-size: cover; */
+    /* background-repeat: no-repeat; */
 }
 
 #title {
@@ -20,14 +22,12 @@ body {
 #game-holder {
     position: relative;
     width: 100em;
-    height: 52em;
-    background-color: #333;
+    height: 50em;
     border: 5px solid #666;
     border-radius: 10px;
     overflow: hidden;
+    margin-bottom: 20px;
 }
-
-
 #boss-health-bar {
     height: 20px;
     background-color: green;
