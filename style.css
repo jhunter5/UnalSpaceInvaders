@@ -28,9 +28,18 @@ body{
     overflow: hidden;
     margin-bottom: 20px;
 }
+
 #boss-health-bar {
     height: 20px;
     background-color: green;
+}
+
+#player-life {
+    position: absolute;
+    top: 10px; 
+    left: 10px;
+    color: white; /* Or any color of your choice */
+    font-family: Arial, sans-serif;
 }
 
 .game-over {

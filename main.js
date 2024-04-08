@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         removeAllSprites();
         gameStatus = 'playing';
         player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
+        player.updateLifeDisplay();
         invaders = new Invaders()
         invaderBoss = null;
         invadersWave = 0;
@@ -535,8 +536,13 @@ class Player{
         playerBullets.push(bullet);
     }
 
+    updateLifeDisplay() {
+        document.getElementById('player-life-value').textContent = this.life;
+    }
+
     getDamage(damage){ 
         this.life -= damage;
+        this.updateLifeDisplay();
     }
 
     checkDeath(){
