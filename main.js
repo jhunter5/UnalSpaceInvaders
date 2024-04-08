@@ -139,7 +139,7 @@ class BasicInvaderBullet extends InvadersBullet{
 class AdvanceInvaderBullet extends InvadersBullet{
     constructor(x, y){
         super(x, y, 0, 6, 20)
-        this.body.img = './assets/advanceInvaderBullet.png'; // Here will goes a differente texture, by now im gonna use the same
+        this.body.img = './assets/advanceInvaderBullet.png'; 
     }
 }
 
@@ -543,6 +543,8 @@ class Player{
 };
 
 function removeAllSprites(){
+    const healthBar = document.getElementById('boss-health-bar');
+    healthBar.style.width = `0%`;
     player.sprite.remove();
     playerBullets.forEach(bullet => bullet.body.remove());
     if (invaders != null){
@@ -662,8 +664,4 @@ function draw() {
     } else {
         gameOverElement.classList.remove("visible");
     }
-
-    // console.log(score)
-    // console.log('vida', player.life)
-    // console.log('estado', gameStatus)
 }
