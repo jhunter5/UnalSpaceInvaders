@@ -310,6 +310,8 @@ class InvaderBoss {
 
     die(){
         this.sprite.remove();
+        let explosion = new Sprite(this.sprite.x, this.sprite.y, 900, 900, 'n');
+        gameStatus = 'won';
     }
 
     reborn(){
@@ -580,9 +582,6 @@ function keyPressed() {
     if (keyCode === 32) {
         player.shoot();
     }
-    if (key == 'z' || key == 'Z'){
-        invaderBoss.takeDamage(500);
-    }
 }
 
 function preload() {
@@ -593,20 +592,16 @@ function preload() {
 let canvas
 
 function setup() {
-    // song.loop();
     gameHolder = document.querySelector("#game-holder");
     WINDOW_WIDTH = gameHolder.offsetWidth;
     WINDOW_HEIGHT = gameHolder.offsetHeight;
-    // console.log(WINDOW_WIDTH, WINDOW_HEIGHT)
     canvas = createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     canvas.parent('game-holder');
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    // invaders = new Invaders()
-    // invaders.spawnInvaders('normal')
-    invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
+    invaders = new Invaders()
+    invaders.spawnInvaders('normal')
     document.getElementById("boss-health-bar").style.display = "none";
     space = loadImage('./assets/space.jpg');
-    
 };
 
 
@@ -675,7 +670,13 @@ function draw() {
         noLoop();
         gameOverElement.classList.add("visible");
         scoreElement.textContent = score;
-    } else {
+    } 
+    else if (gameStatus == 'won') {
+        noLoop();
+        gameOverElement.classList.add("visible");
+        scoreElement.textContent = score;
+    }
+    else {
         gameOverElement.classList.remove("visible");
     }
 }
