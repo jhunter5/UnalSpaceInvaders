@@ -40,11 +40,13 @@ let playerBullets = [];
 let gameOverElement;
 let restartButton;
 let scoreElement;
+let messageElement;
 
 document.addEventListener('DOMContentLoaded', function() {
     gameOverElement = document.querySelector(".game-over");
     restartButton = document.querySelector("#restart-button");
     scoreElement = document.querySelector("#score");
+    messageElement = document.querySelector("#message");
     document.body.style.zoom = "65%";
     
 
@@ -670,11 +672,13 @@ function draw() {
         noLoop();
         gameOverElement.classList.add("visible");
         scoreElement.textContent = score;
+        messageElement.textContent = "Game Over!";
     } 
     else if (gameStatus == 'won') {
         noLoop();
         gameOverElement.classList.add("visible");
         scoreElement.textContent = score;
+        messageElement.textContent = "You Won!";
     }
     else {
         gameOverElement.classList.remove("visible");
