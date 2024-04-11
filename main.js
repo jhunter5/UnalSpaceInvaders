@@ -158,10 +158,10 @@ class DiagonalInvaderBullet extends InvadersBullet{
 class InvaderBoss {
     constructor(x, y){
         this.sprite = new Sprite(x, y, 900, 900, 'n');
-        this.sprite.img = './assets/boss.jpg';
-        this.sprite.debug = false;
-        this.sprite.diameter = 900;
-        this.sprite.scale = 0.2;
+        this.sprite.img = './assets/boss.png';
+        this.sprite.debug = true;
+        this.sprite.diameter = 500;
+        this.sprite.scale = 0.6;
         this.health = 5000;
         this.lifes = 2;
         this.attackPattern = 0; 
@@ -313,7 +313,7 @@ class InvaderBoss {
     }
 
     reborn(){
-        this.sprite.img = './assets/boss2.jpg';
+        this.sprite.img = './assets/boss2.png';
         this.sprite.scale = 1;
         this.sprite.diameter = 200;
         this.sprite.x = WINDOW_WIDTH/2;
@@ -580,6 +580,9 @@ function keyPressed() {
     if (keyCode === 32) {
         player.shoot();
     }
+    if (key == 'z' || key == 'Z'){
+        invaderBoss.takeDamage(500);
+    }
 }
 
 function preload() {
@@ -590,16 +593,17 @@ function preload() {
 let canvas
 
 function setup() {
-    song.loop();
+    // song.loop();
     gameHolder = document.querySelector("#game-holder");
     WINDOW_WIDTH = gameHolder.offsetWidth;
     WINDOW_HEIGHT = gameHolder.offsetHeight;
-    console.log(WINDOW_WIDTH, WINDOW_HEIGHT)
+    // console.log(WINDOW_WIDTH, WINDOW_HEIGHT)
     canvas = createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT);
     canvas.parent('game-holder');
     player = new Player(WINDOW_WIDTH/2, WINDOW_HEIGHT - 50, 'd');
-    invaders = new Invaders()
-    invaders.spawnInvaders('normal')
+    // invaders = new Invaders()
+    // invaders.spawnInvaders('normal')
+    invaderBoss = new InvaderBoss(WINDOW_WIDTH/2, 150);
     document.getElementById("boss-health-bar").style.display = "none";
     space = loadImage('./assets/space.jpg');
     
@@ -649,7 +653,7 @@ function draw() {
         })
     }
 
-    if (invadersWave == 0){
+    if (invadersWave == 0 && invaders != null){
         if (invaders.group.length == 0) {
             invadersWave += 1;
             invaders.spawnInvaders('advance')
